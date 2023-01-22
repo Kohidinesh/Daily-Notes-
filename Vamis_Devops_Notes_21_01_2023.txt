@@ -1,0 +1,129 @@
+[7:13 pm, 21/01/2023] Vamshi: so far we have see how to build docker images for java based application and store it in docker hub or amazon ecr or azure acr
+
+
+##############################################################################################
+Python project
+Nodejs Project
+Golang Project
+################################
+
+
+push image to docker hub or amazon ecr using azure devops pipeline
+#######################################################################
+
+
+Python project
+####################
+how to build and run the project?
+
+in case of java project we build the project using below commands
+
+
+mvn clean package or mvn clean install
+gradle clean build
+
+pip install -r requirements.txt
+
+requirements.txt
+####################
+all the libaries or dependencies needed for this project
+
+
+once it is built finally we can run python mainpythonfile.py
+
+python demo.py --- need to run this only after running above build command
+
+
+#########################
+in CD servers
+########################
+1.we need just docker to be there no need for git and python 
+2.we need to login to docker hub or amazon ecr or azure acr or google gcr
+3.we need to pull the docker images from registry
+4.we need to create/run the container
+
+
+
+The EXPOSE instruction informs Docker that the container listens on the specified network ports at runtime. EXPOSE does not make the ports of the container accessible to the host.
+
+instead of doing process manually these days people are using jenkins pipleine or github actions or azure devops pipeline
+##############################################################################################################################
+
+azure devops pipeline
+########################
+1.we need to store docker hub details in azure devops
+2.we need to create a build pipeline to checkout the code and buold docker image and push dockler image to docker hub with corrresponding build id
+
+################################################################
+azure free trail account
+azure devops url
+
+jenkins pipeline to push docker images tto docker hub or amazon ecr or azure acr
+################################################################################
+pipeline{
+    agent any
+    tools{
+        maven 'maven-3.8.7'
+    }
+    stages{
+        stage('git checkout'){
+            steps{
+                git 'https://github.com/cloudtechmasters/springboot-maven-course-micro-svc.git'
+            }
+        }
+        
+         stage('Build Maven Project'){
+            steps{
+[7:13 pm, 21/01/2023] Vamshi: sh 'mvn clean package'
+            }
+        }
+        
+        stage('Build docker image from docker file of  Project'){
+            steps{
+               sh 'docker image build -t cloudtechmasters/springboot-maven-course-micro-svc:${BUILD_ID} .'
+            }
+        }
+        
+        stage('Login to docker hub and push the image'){
+            steps{
+                   withCredentials([usernamePassword(credentialsId: 'dockerhub-cloudtechmasters-credentials', passwordVariable: 'password', usernameVariable: 'username')]) {
+                    sh 'docker login -u ${username} -p ${password} https://index.docker.io/v1/'
+                    sh 'docker image push cloudtechmasters/springboot-maven-course-micro-svc:${BUILD_ID} '
+                    }
+            }
+        }
+    }
+}
+
+
+####################
+1.go to https://dev.azure.com/gallaprasanna86
+2.create a project  https://dev.azure.com/gallaprasanna86/Jan21Project-Demo
+3.create a build pipeline 
+a.classic editor pipeline in this example instead of yaml pipeline
+
+make sure we have a connection between azure devops and github acccount where your projects are located
+
+authenticate by giving username and password or use personal acccess toekn of github acccount
+
+azure-devops-pat-token
+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
+
+Azure devops pat token
+########################
+ialhlcqvmswlv67ffkphjvreao3uqv6ikk5dgch63aswbbfc44qa
+
+
+[7:15 pm, 21/01/2023] Vamshi: https://medium.com/@cocci.g/set-up-an-azure-devops-self-hosted-agent-5cd9b009b509
+[7:15 pm, 21/01/2023] Vamshi: https://medium.com/@cocci.g/set-up-an-azure-devops-self-hosted-agent-5cd9b009b509
+[7:16 pm, 21/01/2023] Vamshi: https://www.devguides.dev/how-to-build-and-deploy-docker-images-from-azure-devops-to-aws-ecr/
+[7:16 pm, 21/01/2023] Vamshi: https://cj-hewett.medium.com/azure-devops-pipelines-build-and-push-a-docker-image-to-aws-ecr-bc0d35f8f126
+[7:16 pm, 21/01/2023] Vamshi: this is yaml approach
+[7:16 pm, 21/01/2023] Vamshi: https://cj-hewett.medium.com/azure-devops-pipelines-build-and-push-a-docker-image-to-aws-ecr-bc0d35f8f126
+[7:16 pm, 21/01/2023] Vamshi: https://skundunotes.com/2022/03/30/push-docker-images-to-amazon-ecr-using-yaml-based-azure-pipelines/
+[7:16 pm, 21/01/2023] Vamshi: https://raaviblog.com/aws-fargate-container-deployment-from-aws-ecr-using-azure-devops-pipeline/
+[7:21 pm, 21/01/2023] Vamshi: https://medium.com/@TimvanBaarsen/build-your-spring-boot-project-using-azure-pipelines-in-azure-devops-3305977991d
+[7:21 pm, 21/01/2023] Vamshi: all different scenarios can eb tried
+[7:21 pm, 21/01/2023] Vamshi: let me know in case of any issues
+[7:21 pm, 21/01/2023] Vamshi: https://medium.com/@TimvanBaarsen/build-your-spring-boot-project-using-azure-pipelines-in-azure-devops-3305977991d
+[8:38 pm, 21/01/2023] Vamshi: https://codingcanvas.com/using-docker-compose-in-azure-devops-pipeline/

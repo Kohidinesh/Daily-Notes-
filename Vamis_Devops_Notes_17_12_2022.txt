@@ -1,0 +1,164 @@
+Jenkins integration with sonarqube and nexus
+####################################################
+we are going to create 3 servers
+t2.medium for 3 servers
+Server1 will be running jenkins  java 11
+server2 will be running sonar    java 11
+server3 will be running nexus    java 8
+
+
+#####################################
+
+sonarqube
+##################
+
+
+https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.7.1.62043.zip
+
+
+1.it is not recommend to run sonar with root user
+we need to change ownership of sonarfolder to some non root user like ec2-user or create a dedicated user for sonaer
+
+
+
+sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-7.6.zip
+
+#############################################################
+
+from sonar side we need to create a token and then webhook
+
+we need webhook to send the response from sonar back to jenkins machine so that jenkins
+knows sonar report is good or bad
+
+jenkins-sonar-token c5ec7dfb64cf524ddd850ee92d295008ab47220d
+
+http://44.200.231.6:8080/sonarqube-webhook/
+
+
+jenkins 
+#################
+we need to store jenkins-sonar-token in credentials section
+
+jenkins should know what is ur server ip and token for sonar
+
+#############################
+
+
+pipeline{
+    agent any
+    tools{
+        maven 'maven-3.8.6'
+    }
+    
+    stages{
+        stage('git checkout'){
+            steps{
+                git 'https://github.com/cloudtechmasters/springboot-maven-course-micro-svc.git'
+            }
+        }
+        
+        stage('build maven project'){
+            steps{
+                sh 'mvn clean package'
+            }
+        }
+        
+        stage("build & SonarQube analysis") {
+            steps {
+              withSonarQubeEnv('sonarqube-7.6') {
+                sh 'mvn clean package sonar:sonar'
+              }
+            }
+          }
+        
+    }
+}
+
+##############################gradle###################
+
+
+# must be unique in a given SonarQube instance
+sonar.projectKey=nov13-gradle-demo
+
+# --- optional properties ---
+
+# defaults to project key
+#sonar.projectName=nov13-gradle-demo
+# defaults to 'not provided'
+#sonar.projectVersion=1.0
+ 
+# Path is relative to the sonar-project.properties file. Defaults to .
+#sonar.sources=.
+ 
+# Encoding of the source code. Default is default system encoding
+#sonar.sourceEncoding=UTF-8
+
+sonar.sources=src/main/java
+sonar.java.binaries=build/libs/classes
+
+
+##################
+stage('sonarqube analysis'){
+            steps{
+                withSonarQubeEnv(installationName: 'sonarqube-7.6') {
+   sh "/tmp/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner"
+    }
+            }
+        }
+        stage("Quality Gate") {
+            steps {
+              timeout(time: 1, unit: 'HOURS') {
+                waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+		
+###################
+final working pipeline
+######################
+pipeline{
+    agent any
+    tools{
+        gradle 'gradle-7.6'
+    }
+    
+    stages{
+        stage('git checkout'){
+            steps{
+                git 'https://github.com/cloudtechmasters/nov13-gradle-demo.git'
+            }
+        }
+        
+        stage('build gradle  project'){
+            steps{
+                sh 'gradle clean build'
+            }
+        }
+        stage("build & SonarQube analysis") {
+           steps{
+                withSonarQubeEnv(installationName: 'sonarqube-7.6') {
+   sh "/tmp/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner"
+    }
+            }
+          }
+       
+        stage("Quality Gate") {
+            steps {
+              timeout(time: 1, unit: 'HOURS') {
+                waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+    }
+}
+
+
+######################
+sonar process will looks at .class files not .java files
+
+#########################
+.class files will be present under build/libs
+.java files will be present under src/main/java
+
+sonar.sources=src/main/java
+sonar.java.binaries=build/libs

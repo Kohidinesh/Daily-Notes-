@@ -1,0 +1,537 @@
+
+Nov25 class demo
+########################
+what is devops?
+
+devops =development+operations
+
+
+what are the tools in devops?
+
+devops enginerr?
+
+##############################
+
+development can be front end development or it can be backend development
+
+
+
+Front End developers
+#####################
+HTML,CSS,JAVA SCRIPT 
+Angular/React
+
+
+
+Backend Developers
+######################
+Java
+Dotnet
+Python
+Nodejs
+Golang
+
+
+PHP
+#######################
+
+Full stack developer
+
+java + angular
+java+react
+
+
+dotnet + angualr
+dontet+react
+
+
+MEAN
+###############
+MongoDB
+Express (nodeks framewrok)
+A-- angular
+N nodejs
+
+
+
+MERN 
+######################
+
+before devops there used be a team called operations team and they used to support many projects within LOB (Line of Business)
+
+
+each project has its own deadlines
+
+Project-1 needs Infra to be setup in a month
+Project-2 needs deploymnet to be done in 1-2 weeks
+
+
+
+along with team they are keeping few devops enginerrs as well
+
+whatever development team is going to need in nexrt few weeks devops team is going to work on that upfront 
+so that once devops team finishes developer can use the infra readily
+
+CI means continous integration
+CD means continous delivery
+##################################
+
+1.developer will create a project in his local machine and  will work as per the business specifications given to him
+2.he will test the project in his local machine by adding proper unit test cases
+
+for example if business says add2 number
+
+developer will write test cases to test both +ve and -ve 
+
+10+20 =30
+intgearion test as well
+
+3.after all this they will push the code to a common place called github or some other tools 
+
+version control system (VCS)
+https://github.com/cloudtechmasters/springboot-maven-course-micro-svc
+
+until here developer work is done
+
+
+Devops Enginerr
+#####################
+1.he should checkout the code from github (GIT tool)
+2.we should build the code writeen by developer
+build tools
+java -- apache maven or gradle
+dotnet --- MS Build or dotnet cli
+python --- pip
+nodejs --- npm
+
+3.we should check quality of the code  (Sonarqube & Jacoco (java code coverage))
+4.if code is good we need to store build artifacts in Remote repository
+
+Amazon s3/nexus/jfrog
+
+
+CI is completed
+############################################################################
+
+
+lets say jenkins is shared one 
+
+meaning jenkins master will be shared by multiple projects
+
+if we have 5 agents if 6 teams wants to start their CI BUils
+
+5 will be running each job and 6th one will be waiting
+
+
+each team can create their own server (agent) and they can run their job on this speicfici server which they created
+#######################################################################################################################
+
+#########################
+##  Manula CI PIPELINE ##
+#########################
+1> Create the 2 Ec2 Instance (one for Build server and another for Sonar server)with 2CPU and 4 GB RAM 
+2>
+Build server
+######################
+we need to install git, java, maven on Build server
+
+sudo yum install java-11-amazon-corretto-headless -y
+sudo yum install git -y 
+
+wget https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
+trr -xvf apache-maven-3.8.6-bin.tar.gz
+export PATH=$PATH:/root/apache-maven-3.8.6/bin/
+mvn --version
+
+YUM (Yellowdog Updater Modified)
+
+Pull the code from the Git-
+git clone https://github.com/cloudtechmasters/springboot-maven-course-micro-svc.git
+git branch 
+  
+https://github.com/cloudtechmasters/springboot-maven-course-micro-svc.git
+
+
+Command to Build the Project:
+****************************
+mvn clean package
+
+3> 
+Sonar Server
+##############
+we need to install java, Sonarqube on sonar server
+
+sonar port is 9000
+sonar default user is admin and password is admin
+
+wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.7.1.62043.zip
+unzip sonarqube-9.7.1.62043.zip
+
+/home/ec2-user/sonarqube-9.7.1.62043/bin/linux-x86-64/sonar.sh start
+/home/ec2-user/sonarqube-9.7.1.62043/bin/linux-x86-64/sonar.sh status
+
+Command to Intergarte Build process with Sonarqube
+**************************************************
+mvn sonar:sonar -Dsonar.login=myAuthenticationToken
+
+mvn sonar:sonar -Dsonar.projectKey=springboot-maven-course-micro-svc -Dsonar.host.url=http://3.111.197.144:9000 -Dsonar.login=squ_00969ce411c421e85e78a2ceb68af08ea16d71af
+
+Command to run on Build Server
+mvn sonar:sonar -Dsonar.projectKey=springboot-maven-course-micro-svc -Dsonar.host.url=http://3.110.171.238:9000/ -Dsonar.login=squ_1ae59029da797fa0c84aa64f2b2a42b524830e6b
+
+squ_209df22b780ece39fe6abaaf30e2c01c3069aefc and buils serer is running on one machine and sonar is running on another machine
+we need to mention sonar host url aas well
+
+mvn sonar:sonar -Dsonar.projectKey=springboot-maven-course-micro-svc -Dsonar.host.url=http://44.211.187.77:9000 -Dsonar.login=squ_209df22b780ece39fe6abaaf30e2c01c3069aefc
+
+
+sonar.projectKey=my:project
+
+
+###############################
+to upload jar file to amazon s3 we need iam permission for ec2 instance
+
+
+
+#####################
+1.create aws acccount immediatelt and create azure account when we start with those cncepts
+
+aws account can ve crated with debit card azure account needs credit card for free account
+
+
+2.there are some tools which needs to be there in everyone machine
+
+
+1.mobaxterm 
+2.git
+3.putty
+4.winscp
+5.visual studio code
+6.java
+7.sql workbench
+8.terraform
+################################
+3.linux commands
+4.know how to isnatll alldevops tools using linux commands
+
+##########################################
+git
+maven gradle
+sonarqube
+nexus/jfrog
+
+
+jenkins
+docker
+k8s
+ansible
+
+ELK
+promethues
+grafana
+
+
+
+
+aws services
+##################
+
+
+Automation
+#################
+Shell scripting
+python scripting
+
+
+Terraform   (Infrastructee as a code)
+
+
+jenkins --- github actions or gitlab or azure devops pipelkine aws code pipekine
+#######################################################################
+
+
+terraform we create aws eks and azure aks
+####################################################
+on this k8s setup we deploy our apps
+
+
+###########################
+k8s
+####################
+pod
+deploymnet
+statefulset
+damonset
+PV and PVC
+
+
+RBAC
+
+
+GIT OPS
+FLUX CD
+ARGO CD
+
+
+Nov26 class 
+########################
+
+winscp:https://winscp.net/eng/download.php
+filezilla:https://filezilla-project.org/
+putty:https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html
+visualstudio:https://code.visualstudio.com/download
+terraform:https://www.terraform.io/downloads.html
+azure cli:https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli
+Dbeaver community:https://dbeaver.io/download/
+Azure data studio:https://docs.microsoft.com/en-us/sql/azure-data-studio/download-azure-data-studio?view=sql-server-ver15
+Azure storage explorer:https://azure.microsoft.com/en-us/features/storage-explorer/
+Anydesk:https://anydesk.com/en
+
+
+Visual studio done
+putty         done
+mobaxterm     done
+notepad ++    done 
+git           done 
+terraform     done
+java 11       done
+winscp        done
+
+#################################################################################################################################
+#################################################################################################################################
+
+
+#######################
+install all the devops tools on aws machines as well 
+who ever is not having azure account 
+
+
+in aws we are going to create server
+
+1.amazon linux2
+2.rhel 8
+3.ubuntu 20.04
+
+#############################################
+
+
+convert pem file to ppk using puttygen
+
+java 11
+or java 8
+
+https://archive.apache.org/dist/maven/maven-3/
+https://archive.apache.org/dist/tomcat/
+
+java is needed for below softwares/tools
+
+
+maven needs java
+gradle needs java
+sonar needs java
+jenkins needs java
+tomcat needs java
+nexus needs java
+jfrog needs java
+elasic search needs java
+
+
+sonar needs java 8
+
+sonar 8 & 9 versions needs java 11
+
+
+wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.3.0.51899.zip
+
+
+for jenkins
+#####################
+1.java should be there
+2.epel should be installed
+
+
+sudo amazon-linux-extras install epel -y
+
+https://www.jenkins.io/doc/book/installing/linux/#red-hat-centos
+
+Long Term Support release
+A LTS (Long-Term Support) release is chosen every 12 weeks from the stream of regular releases as the stable release for that time period. It can be installed from the redhat-stable yum repository.
+
+sudo wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat-stable/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+sudo yum upgrade
+# Add required dependencies for the jenkins package
+sudo yum install fontconfig java-11-openjdk
+sudo yum install jenkins
+
+
+rhel8
+################
+
+
+sudo yum update -y
+sudo yum install  java-11-openjdk -y
+sudo yum install wget -y
+wget https://archive.apache.org/dist/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz
+tar xvf apache-maven-3.8.4-bin.tar.gz
+export PATH=$PATH:/home/ec2-user/apache-maven-3.8.4/bin
+
+sudo yum install unzip -y
+wget https://distfiles.macports.org/gradle/gradle-7.4-bin.zip
+unzip gradle-7.4-bin.zip
+export PATH=$PATH:/home/ec2-user/gradle-7.4/bin
+
+
+sonar
+##############
+wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.3.0.51899.zip
+unzip sonarqube-9.3.0.51899.zip
+/home/ec2-user/sonarqube-9.3.0.51899/bin/linux-x86-64/sonar.sh start
+/home/ec2-user/sonarqube-9.3.0.51899/bin/linux-x86-64/sonar.sh status
+
+
+
+ubuntu
+#################
+sudo apt-get update -y
+sudo apt-get install openjdk-11-jdk openjdk-11-jre -y
+
+wget https://archive.apache.org/dist/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz
+tar xvf apache-maven-3.8.4-bin.tar.gz
+export PATH=$PATH:/home/ubuntu/apache-maven-3.8.4/bin
+
+wget https://distfiles.macports.org/gradle/gradle-7.4-bin.zip
+sudo apt install unzip -y
+unzip gradle-7.4-bin.zip
+export PATH=$PATH:/home/ubuntu/gradle-7.4/bin
+
+
+wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.3.0.51899.zip
+unzip sonarqube-9.3.0.51899.zip
+/home/ubuntu/sonarqube-9.3.0.51899/bin/linux-x86-64/sonar.sh start
+/home/ubuntu/sonarqube-9.3.0.51899/bin/linux-x86-64/sonar.sh status
+
+Debian/Ubuntu
+On Debian and Debian-based distributions like Ubuntu you can install Jenkins through apt.
+
+Long Term Support release
+A LTS (Long-Term Support) release is chosen every 12 weeks from the stream of regular releases as the stable release for that time period. It can be installed from the debian-stable apt repository.
+
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update -y
+sudo apt-get install jenkins -y
+
+
+####################
+ansible
+docker
+k8s
+tomcat
+nexus
+prometheus
+grafana
+elk -- elastic search, log stash and kibana
+#####################################
+
+#############################################################################################################################
+#############################################################################################################################
+
+####################################
+1.how to create aws ec2 instance and connect to it?
+linux machine
+windows machine
+
+
+in aws terminilogy server is called as instance
+
+in aws there is a concept call networking and we call that as virtual private cloud (VPC)
+by default we will have a vpc with 172 series range if you want to create ur own u can decide the
+CIDR range and create server under that CIDR range subnets
+
+once windows server is created on the aws side. we need a mechanism to conenct to that server securely
+how aws is doing this?
+they created something called keypair each time you wnst to conenct to server we need this keypair
+
+DROP TABLE IF EXISTS links;
+
+CREATE TABLE links (
+	id SERIAL PRIMARY KEY,
+	url VARCHAR(255) NOT NULL,
+	name VARCHAR(255) NOT NULL,
+	description VARCHAR (255),
+        last_update DATE
+);
+
+
+select * from links
+
+INSERT INTO links (url, name)
+VALUES('https://www.postgresqltutorial.com','PostgreSQL Tutorial');
+
+
+#############################
+Create linux server and connect to linux server using git bash and mobaxterm and then putty
+#############################################################################################
+
+linux server can be one of below flavours
+1.amazon linux  -- AMI make sure we select amazon linux
+2.rhel
+3.ubuntu
+4.susi 
+
+
+ssh -i "vamsikrm-weekend.pem" ec2-user@ec2-52-87-183-185.compute-1.amazonaws.com
+
+
+approach 3: use putty to connect to ec2 instance (linux instance)
+before using putty make sure we conver pem file to ppk file puttygen
+
+
+let say i want to install terraform on ec2 instance
+1.is the ec2 rhel machine or ubuntu machine
+
+
+if it is rhel machine we need to use yum commands if it is ubuntu machine we need to use apt commands
+
+apt means advanced package tool
+
+in general package means a software in linux
+
+wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt update && sudo apt install terraform
+
+
+wget means get from web if you have any url and if u want to download in linux machine in some path we need to use this command
+
+
+##########################
+learn linux commands
+
+apply these comamnds to install below devops tools
+
+1.git
+2.java or dotnet or python or nodejs or golang
+3.apache maven or gradle
+4.sonarqube
+5.nexus or jfrog
+6.jenkins
+7.ansible
+8.docker & k8s
+9.ELK stack
+10.Promethues and Grafana
+
+11.mysql,postgresql and mongodb db
+
+12.terraform 
+
+we will learn all the above mentioned tools in amazonlinux/rhel and ubuntu macines
+######################################
+
+#####################################################################################################################
+#####################################################################################################################

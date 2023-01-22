@@ -1,0 +1,187 @@
+DEVOPS CI CD MANUAL
+###########################
+1.developer will be there for both front end and back end projects
+if someone knows both he is called as full stack developer
+
+for frontt end developer should know html,css,javascript  and angular or react
+for backend developer should know java/dotnet/python/nodejs/golang if it very old projects PHP 
+
+for now lets assume that we are working/supporting java based projects as a devops enginerr
+#####################################################################################
+we should know abt the build tools for java project
+
+1.apache ant --- for legacy projects
+2.apache maven -- for new project small scale based
+3.gradle -- for new project large scale based or complex projects
+
+gradle is many times faster than maven
+
+#################################################################
+
+Developer work (not for devops enginerr dont panic)
+###############################################
+he can create java project in many ways
+
+1.he can use apache maven commands from cli and creaate a project
+2.he can use web for creating project from spring intializer website or each company maintains a web page to create project
+3.he can use IDE tools like eclipse,Spring Tool suite or Intellij to create projects
+
+but once he creates the projects he will work on the code and make chnages and test in his local machine
+and then he will send the code to github and his work will be done
+
+
+In windows machine he can download and set environment variables for apache maven so that he can run maven commands from command line itself
+mvn archetype:generate 
+	-DgroupId={project-packaging}
+	-DartifactId={project-name}
+	-DarchetypeArtifactId={maven-template} 
+	-DinteractiveMode=false
+
+mvn archetype:generate -DgroupId=com.cloudtechmasters -DartifactId=java-project-dec10 -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+
+2.he can use web for creating project from spring intializer website or each company maintains a web page to create project
+https://start.spring.io/
+
+
+3.he can use IDE tools like eclipse,Spring Tool suite or Intellij to create projects
+
+https://www.jetbrains.com/idea/download/#section=windows
+Community Edition
+The IDE for pure Java and Kotlin development
+
+right now entire job market is talking abt micro services 
+from java perspective we have a framework called spring boot for building java micro services
+
+
+developer will be using ide options to clean and build the project
+
+if he dont this way he can also use command
+mvn clean package is building a jar file
+
+ Building jar: C:\Users\muppa\IdeaProjects\untitled2\target\untitled2-1.0-SNAPSHOT.jar
+ 
+ artifactId-version.packaging
+ i want to keep my own jar file or war file name we can use finalName tag in build tag section
+ <groupId>org.example</groupId>
+  <artifactId>untitled2</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+
+
+once project is ready and build also sucessful how to run the project?
+1.from intellij itself we can run the java main class by right click and run java application
+2.build project from command line and then run jar file
+
+3.as we have used spring boot maven plugin in pom.xml we can use mvn spring-boot:run as well to start the proejct
+
+<plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+
+Intellij will be there only in developer machine not in dev/qa/uat/prod environment 
+in these cases we can use approaches 2 and 3
+
+which is running jar file directly or using mvn spring-boot:run
+
+
+java -jar C:\Users\muppa\IdeaProjects\untitled2\target\untitled2-1.0-SNAPSHOT.jar or mvn spring-boot:run
+
+
+Devops Engineer Work
+##############################
+1.get the code from git  --- git clone https://github.com/cloudtechmasters/untitled2.git
+2.we need to make sure java and maven are installed on the build server /jenkins server 
+3.build the project  --- mvn clean package
+4.store the project artifacts in common location like amazon s3 or nexus or jfrog
+
+now ec2 is diff service and s3 is diff service if ec2 wants to upload objects to amazon s3 bucket we need
+to get iam permissions
+it can be iam user or iam role
+
+if it is iam user we will have acess keys
+if it is iam role we need to attach that role to the serverr
+
+https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#Instances:v=3;$case=tags:true%5C,client:false;$regex=tags:false%5C,client:false
+
+
+aws configure set default.region us-east-1
+java-project-artifacts-dec10
+
+CD
+######################
+1.download the artifacts from common location on dev/qa/uat/prod server and
+2.make sure just java is there and run java -jar untitled2-1.0-SNAPSHOT.jar 
+
+
+aws s3 cp  s3://java-project-artifacts-dec10/untitled2-1.0-SNAPSHOT.jar /home/ec2-user
+java -jar /home/ec2-user/untitled2-1.0-SNAPSHOT.jar
+
+devops artifact is a product produced/created during the software development process.
+
+it may consist of project code,depenendencies mentioned in pom.xml
+
+there are 2 diff types of artifacts
+
+1.snapshot artifacts   -- this project or work is still under development not ready for releaee
+2.release artifacts     --- once develipment is done for releease we have only one version or one arfiact for tht release
+
+
+
+A "release" is the final build for a version which does not change. 
+A "snapshot" is a build which can be replaced by another build which has the same name. 
+It implies that the build could change at any time and is still under active development.
+
+
+[ec2-user@ip-172-31-7-245 ~]$ history
+    1  git --version
+    2  sudo yum install git -y
+    3  sudo yum install java-1.8.0-openjdk java-1.8.0-openjdk-devel -y
+    4  pwd
+    5  wget https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
+    6  tar xvf apache-maven-3.8.6-bin.tar.gz
+    7  cd apache-maven-3.8.6/bin/
+    8  pwd
+    9  cd /home/ec2-user/
+   10  vi .bashrc
+   11  source .bashrc
+   12  pwd
+   13  history
+   
+[root@cd-server-dev ec2-user]# history
+    1  cd /home/ec2-user/
+    2  pwd
+    3  ls
+    4  aws configure set default.region us-east-1
+    5  cat /root/.aws/config
+    6  aws s3 cp  s3://java-project-artifacts-dec10/untitled2-1.0-SNAPSHOT.jar /home/ec2-user
+    7  pwd
+    8  ls
+    9  java -jar untitled2-1.0-SNAPSHOT.jar
+   10  sudo yum install java-1.8.0-openjdk -y
+   11  java -jar untitled2-1.0-SNAPSHOT.jar
+
+
+
+
+Analyze Java code using Maven/Gradle in SonarQube and Jenkins for SpringBoot Application:
+----------------------------------------------------------------------------------------
+https://youtu.be/l-XnBXZiXhI
+
+
+Devops Interview Question and Answers | Maven Interview Questions and Answers:
+-----------------------------------------------------------------------------
+https://youtu.be/IbmFE-eGIpc
+
+https://www.thegeekstuff.com/2019/04/aws-s3-cli-examples/
+
+https://aws.amazon.com/blogs/opensource/using-a-postgresql-database-with-amazon-rds-and-spring-boot/
+
+8 Netcat (nc) Command with Examples:
+------------------------------------
+https://www.tecmint.com/netcat-nc-command-examples/
+
+
+
+   

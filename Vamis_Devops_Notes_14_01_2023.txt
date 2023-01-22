@@ -1,0 +1,300 @@
+Jfrog Login Details
+######################
+Platform URL: https://dineshyadav.jfrog.io
+Username: dineshmail536@gmail.com
+Password: Iamback24@
+
+https://devopsrbapocjfrog.jfrog.io/artifactory/rba-artifacts/spring-boot/spring-boot/
+https://devopsrbapocjfrog.jfrog.io/artifactory/rba-artifacts/spring-boot/spring-boot/2.6.9/spring-boot-2.6.9.jar
+
+
+
+#######################################################
+like nexus we have jfrog for storing our project artifacts
+###########################################################
+in realtime project u can either see jfrog or nexus 
+
+it can be for storing jar file or war file  or it can be used for storing docker images as well
+###############################################################################
+
+
+when we are working with java based projects we have total 3 types of repositories
+
+1.local repository  ----  C:\Users\muppa\.m2\repository
+2.central repository --- https://repo.maven.apache.org/maven2
+3.remote repository
+
+what is the order for lookup when we want a dependency?
+
+
+<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-maven-plugin -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+    <version>3.0.1</version>
+</dependency>
+
+
+It scans through the local repositories for all the configured dependencies. If found, then it continues with the further execution. If the configured dependencies are not found in the local repository, then it scans through the central repository.
+
+If the specified dependencies are found in the central repository, then those dependencies are downloaded to the local repository for the future reference and usage. If not found, then maven starts scanning into the remote repositories.
+
+in offfice we will restrict public download of dependencies from central repository
+
+instead we will download from central repisotur we will check whether that jar or dependency is vulnerable or npt
+if it is not vulnerable then it will be uploaded to remote repository either nexus or jfrog
+
+
+once the jar is avaiable in remote reposiotry app teams/devops teams uses those jars from Nexus/jfrog for ci cd process
+####################################################################################################
+
+if sonar says project analysis is success we need to then upload project artifacts like jar or war tar.gz to Nexus/jfrog as a part of CI process
+
+
+In CD process we will then download the version needed from Nexus/jfrog and deploy to DEV or QA or UAT/STAGING or PROD
+#####################################################################################################################
+
+CI process
+#################
+Maven Deploy to Nexus
+#############################
+
+google- Maven Deploy to Nexus
+https://www.baeldung.com/maven-deploy-nexus
+
+
+in pom.xml we need to add below element
+
+<distributionManagement>
+   <snapshotRepository>
+      <id>nexus-snapshots</id>
+      <url>http://localhost:8081/nexus/content/repositories/snapshots</url>
+   </snapshotRepository>
+   <repository>
+      <id>nexus-snapshots</id>
+      <url>http://localhost:8081/nexus/content/repositories/snapshots</url>
+   </repository>
+</distributionManagement>
+
+
+to save time i will take another server and install docker and run nexus
+###############################################################################
+sudo yum install docker -y
+sudo systemctl start docker
+sudo docker container run --name=nexuscontainer -p 8081:8081  sonatype/nexus3 --detach
+
+
+http://54.88.120.242:8081/repository/maven-snapshots/
+http://54.88.120.242:8081/repository/maven-releases/
+
+
+<distributionManagement>
+   <snapshotRepository>
+      <id>maven-snapshots</id>
+      <url>http://54.88.120.242:8081/repository/maven-snapshots</url>
+   </snapshotRepository>
+   <repository>
+      <id>maven-releases</id>
+      <url>http://54.88.120.242:8081/repository/maven-releases</url>
+   </repository>
+</distributionManagement>
+
+
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-deploy-plugin:2.8.2:deploy (default-deploy) on project springboot-maven-course-micro-svc: Failed to retrieve remote metadata com.cloudtechmasters:springboot-maven-course-micro-svc:0.0.1-SNAPSHOT/maven-metadata.xml: Could not transfer metadata com.cloudtechmasters:springboot-maven-course-micro-svc:0.0.1-SNAPSHOT/maven-metadata.xml from/to maven-snapshots (http://54.88.120.242:8081/repository/maven-snapshots): authentication failed for http://54.88.120.242:8081/repository/maven-snapshots/com/cloudtechmasters/springboot-maven-course-micro-svc/0.0.1-SNAPSHOT/maven-metadata.xml, status: 401 Unauthorized -> [Help 1]
+
+
+
+we need to make sure we mention nexus username and password in maven settings.xml 
+
+
+<server>
+      <id>maven-snapshots</id>
+      <username>admin</username>
+      <password>admin123</password>
+   </server>
+   <server>
+      <id>maven-releases</id>
+      <username>admin</username>
+      <password>admin123</password>
+   </server>
+   
+######################
+we created 2 servers for now
+
+in server-1 maven build process will be there
+in server 2 nexus will be up and running
+
+nexus is commong for many projexts each team should not run their own nexus -- nexus will be a shared server
+
+##################
+1.server-1 for manual or jenkins build process having git java,maven, gradle sonar scanner and jenkins running in one machine
+sonar scanner will be in jenkins machine
+
+https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
+2.server-2 for running sonar 
+3.server-3 for running nexus
+
+now when somethign is development and not completely developer will be making lot of chnages abd do builds
+
+we call this as snapshot
+
+
+
+once everything is finalzed and wont chnage that we called it as release
+
+A "release" is the final build for a version which does not change. A "snapshot" is a build which can be replaced by another build which has the same name. It implies that the build could change at any time and is still under active development.
+
+
+###################################################################################
+
+Nexus on Ec2: Article
+
+https://devopscube.com/how-to-install-latest-sonatype-nexus-3-on-linux/
+
+####################################################################################
+
+few companies instead of nexus they may use jfrog as well
+
+#####################################################
+
+
+<distributionManagement>
+   <snapshotRepository>
+      <id>maven-snapshots</id>
+      <url>http://54.88.120.242:8081/repository/maven-snapshots</url>
+   </snapshotRepository>
+   <repository>
+      <id>maven-releases</id>
+      <url>http://54.88.120.242:8081/repository/maven-releases</url>
+   </repository>
+</distributionManagement>
+
+Jfrog Login Details
+######################
+https://devopsrbapocjfrog.jfrog.io/ui/login
+Karthikjune01@gmail.com
+Login@123
+
+<distributionManagement>
+    <repository>
+        <id>central</id>
+        <name>a0m7a9d5n0kvu-artifactory-primary-0-releases</name>
+        <url>https://devopsrbapocjfrog.jfrog.io/artifactory/libs-release</url>
+    </repository>
+</distributionManagement>
+
+<server>
+      <id>central</id>
+      <username>Karthikjune01@gmail.com</username>
+      <password>Login@123</password>
+   </server>
+
+
+CD process
+##################
+
+https://devopsrbapocjfrog.jfrog.io/artifactory/libs-release-local/com/cloudtechmasters/springboot-maven-course-micro-svc/0.0.1/springboot-maven-course-micro-svc-0.0.1.jar
+
+curl –u username:password [URL]
+
+curl –u Karthikjune01@gmail.com:Login@123 https://devopsrbapocjfrog.jfrog.io/artifactory/libs-release-local/com/cloudtechmasters/springboot-maven-course-micro-svc/0.0.1/springboot-maven-course-micro-svc-0.0.1.jar
+
+
+curl -v -u Karthikjune01@gmail.com:Login@123 --upload-file target/springboot-maven-course-micro-svc-0.0.1-SNAPSHOT.jar http://3.91.183.173:8081/repository/maven-snapshots/com/cloudtechmasters/springboot-maven-course-micro-svc/0.0.1-SNAPSHOT/springboot-maven-course-micro-svc-0.0.1-SNAPSHOT.jar 
+curl -v -H "Connection: close"  -u Karthikjune01@gmail.com:Login@123 https://devopsrbapocjfrog.jfrog.io/artifactory/libs-release-local/com/cloudtechmasters/springboot-maven-course-micro-svc/0.0.1/springboot-maven-course-micro-svc-0.0.1.jar -O /tmp
+
+https://devopsrbapocjfrog.jfrog.io/artifactory/libs-release-local/com/cloudtechmasters/springboot-maven-course-micro-svc/0.0.1/springboot-maven-course-micro-svc-0.0.1.jar
+
+
+#################
+final working 
+#################
+
+
+[root@cd-process ~]# curl -v -H "Connection: close" -u $username:$password https://devopsrbapocjfrog.jfrog.io/artifactory/libs-release-local/com/cloudtechmasters/springboot-maven-course-micro-svc/0.0.1/springboot-maven-course-micro-svc-0.0.1.jar -o /tmp/springboot-maven-course-micro-svc-0.0.1.jar
+
+
+##################
+shell script to check app is up and running after deployment
+############################################################
+$? is used to find the return value of the last executed command
+
+##########################
+#!/bin/bash
+echo "Calling Application URL to check it is running or not"
+curl http://54.87.106.68:8080/course-svc/getAllDevopsTools
+if [ $? -eq 0 ]; then
+  echo "Deployment successfully completed"
+else
+  echo "Error found during Deployment"
+  exit 1
+fi
+
+
+######################
+Python call GET URL
+############################
+
+URL='http://54.87.106.68:8080/course-svc/getAllDevopsTools'
+# sending get request and saving the response as response object
+r = requests.get(url = URL)
+data = r.json()
+
+
+if bool(data):
+	print("Deployment successfully completed")
+else:
+    print("Error found during Deployment")
+	
+################
+[ec2-user@cd-process ~]$ cat checkAppAfterDeployment.py
+import requests
+URL='http://54.87.106.68:8080/course-svc/getAllDevopsTools'
+r = requests.get(url = URL)
+data = r.json()
+if bool(data):
+        print("Deployment successfully completed")
+else:
+    print("Error found during Deployment")
+
+
+################
+there are few projects which might be with war file
+and for war file we need tomcat
+#######################################
+
+
+curl -v -H "Connection: close"  -u Karthikjune01@gmail.com:Login@123 https://devopsrbapocjfrog.jfrog.io/artifactory/libs-release-local/com/tecmax/demo/mavenwebappdemo/0.0.1/mavenwebappdemo-0.0.1.war -o /tmp/mavenwebappdemo-0.0.1.war
+
+
+[root@cd-process ~]# ls /tmp/
+hsperfdata_root                              systemd-private-dae510b60a7d497d9d2b0cef2568f286-chronyd.service-MxFQM8
+mavenwebappdemo-0.0.1.war                    tomcat.8080.17912105801444153215
+springboot-maven-course-micro-svc-0.0.1.jar
+[root@cd-process ~]# cp /tmp/mavenwebappdemo-0.0.1.war /root/apache-tomcat-10.0.27/webapps/
+[root@cd-process ~]# sh /root/apache-tomcat-10.0.27/bin/startup.sh
+Using CATALINA_BASE:   /root/apache-tomcat-10.0.27
+Using CATALINA_HOME:   /root/apache-tomcat-10.0.27
+Using CATALINA_TMPDIR: /root/apache-tomcat-10.0.27/temp
+Using JRE_HOME:        /
+Using CLASSPATH:       /root/apache-tomcat-10.0.27/bin/bootstrap.jar:/root/apache-tomcat-10.0.27/bin/tomcat-juli.jar
+Using CATALINA_OPTS:
+Tomcat started.
+
+
+#####################
+in ur local you have target directory that  u can run using 
+
+for QA/UAT/PROD we use release version
+only for DeV eNV we use snapshot version
+#####################################################
+
+but regardless we need to store bothh snapshot and release in remote repository
+###################################################################################
+
+Today's links-
+https://www.studytonight.com/maven/repositories-in-maven
+https://github.com/mupparajuvamsi/mavenwebappdemo
+https://github.com/mupparajuvamsi/mavenwebappdemo
+https://www.baeldung.com/maven-deploy-nexus
+https://www.baeldung.com/maven-release-nexus
